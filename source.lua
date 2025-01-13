@@ -2970,7 +2970,7 @@ LPH_JIT_MAX(function() -- Main Cheat
     --- @param speed number The desired speed of the object.
     --- @return Vector position The calculated position of the object at the given trajectory.
     --- @return number time The time it takes to reach the calculated position.
-    local function calculate_trajectory(origin, acceleration, target_position, speed)
+    local function trajectory(origin, acceleration, target_position, speed)
         local force = -acceleration
         local displacement = target_position - origin
         local force_magnitude_squared = force:Dot(force)
@@ -2992,7 +2992,7 @@ LPH_JIT_MAX(function() -- Main Cheat
     --- @param target_position Vector The target position the object aims to reach.
     --- @param speed number The desired speed of the object.
     --- @param external_force Vector The external force applied to the object.
-    local function calculate_complex_trajectory(origin, acceleration, target_position, speed, external_force)
+    local function complexTrajectory(origin, acceleration, target_position, speed, external_force)
         local displacement = target_position - origin
         acceleration = -acceleration
         external_force = external_force or Vector3.zero
