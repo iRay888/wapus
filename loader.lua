@@ -17,7 +17,7 @@ elseif string.find(environment, "AWP") ~= nil and not executed then
             end
         ]])
     end
-elseif environment == "Wave" and not executed then
+elseif string.find(string.lower(environment), "wave") and not executed then
     run_on_actor(getdeletedactors()[1], source)
 elseif environment == "Nihon" and not executed then
     for _, actor in getactorthreads() do
