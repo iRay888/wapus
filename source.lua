@@ -32,7 +32,7 @@ end
 LPH_JIT_MAX = LPH_NO_VIRTUALIZE
 
 local devMode = true
-local defaultUIName = "Wapus.Shop" -- $$$
+local defaultUIName = "Wapus" -- $$$
 local folderName = "Phantom Forces Cheat"
 local connectionList = {}
 local callbackList = {}
