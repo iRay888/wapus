@@ -5,7 +5,7 @@ local isLimited = ...
 local environment = identifyexecutor and identifyexecutor() or ""
 local source = game:HttpGet("https://raw.githubusercontent.com/iRay888/wapus/refs/heads/main/" .. (isLimited and "source-limited.lua" or "source.lua"))
 if string.find(string.lower(environment), "wave") and not executed then
-    run_on_actor(getdeletedactors()[1], source)
+    run_on_actor(get_deleted_actors()[1], source)
 elseif getfflag and string.find(string.lower(tostring(getfflag("DebugRunParallelLuaOnMainThread"))), "true") and not executed then
     loadstring(source)()
 elseif string.find(environment, "AWP") ~= nil and not executed then
