@@ -2788,7 +2788,9 @@ LPH_JIT_MAX(function() -- Main Cheat
 
     local modules = {}
     for name, data in moduleCache do
-        modules[name] = data.module
+        if data then
+            modules[name] = data.module
+        end
     end
 
     --now aint this sexy
@@ -2881,6 +2883,12 @@ LPH_JIT_MAX(function() -- Main Cheat
 
     fakeRepObject = replicationObject.new(setmetatable({}, {
         __index = function(self, index)
+            if index == "GetPropertyChangedSignal" then
+                return function(_, property)
+                    return localplayer:GetPropertyChangedSignal(property)
+                end
+            end
+
             return localplayer[index]
         end,
         __newindex = function(self, index, value)
