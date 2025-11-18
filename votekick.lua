@@ -75,7 +75,6 @@ local function serverHop()
     end
     hopping = true
 
-        print("ok it executed prolly")
     task.delay(0.5, function()
         table.sort(serverList, function(data0, data1)
             return data0.playing > data1.playing
@@ -89,10 +88,7 @@ local function serverHop()
             end)
         end)
 
-        queue_on_teleport(request({Url = "https://raw.githubusercontent.com/iRay888/wapus/refs/heads/main/votekick.lua", Method = "GET"}).Body .. [[
-        print("ok it executed fs")
-        ]])
-        print("ok it executed yep")
+        queue_on_teleport(request({Url = "https://raw.githubusercontent.com/iRay888/wapus/refs/heads/main/votekick.lua", Method = "GET"}).Body)
         teleportService:TeleportToPlaceInstance(game.PlaceId, serverList[1].id)
     end)
 end
