@@ -1,21 +1,28 @@
 local searchString = "You have been votekicked"
 local waitTime = 3
 
---local checkIndex = game.JobId .. " votekicker"
---if getgenv()[checkIndex] then
---    return
---end
---getgenv()[checkIndex] = true
-
 local teleportService = game:GetService("TeleportService")
 local httpService = game:GetService("HttpService")
 local coreGui = game:GetService("CoreGui")
+local players = game:GetService("Players")
 local robloxPromptGui = coreGui:WaitForChild("RobloxPromptGui")
 local promptOverlay = robloxPromptGui:WaitForChild("promptOverlay")
 local hopping = false
 
+while not players.LocalPlayer do
+    task.wait()
+end
+
+local checkIndex = game.JobId .. " votekicker"
+
+if getgenv()[checkIndex] then
+    return
+end
+
+getgenv()[checkIndex] = true
+
 local folderName = "votekicked servers"
-local fileName = folderName .. "/" .. tostring(game:GetService("Players").LocalPlayer.UserId) .. tostring(game.PlaceId) .. ".txt"
+local fileName = folderName .. "/" .. tostring(players.LocalPlayer.UserId) .. tostring(game.PlaceId) .. ".txt"
 local function addToList()
     local votekickedServers = {game.JobId}
 
@@ -53,7 +60,6 @@ local function startSearching(ignoreList)
         end
 
         cursor = servers.nextPageCursor
-        table.foreach(servers, print)
 
         if not cursor then
             break
@@ -69,6 +75,7 @@ local function serverHop()
     end
     hopping = true
 
+        print("ok it executed prolly")
     task.delay(0.5, function()
         table.sort(serverList, function(data0, data1)
             return data0.playing > data1.playing
@@ -76,10 +83,16 @@ local function serverHop()
 
         task.delay(1, function()
             hopping = false
-            promptOverlay:FindFirstChild("ErrorPrompt").TitleFrame.ErrorTitle.Text = "Disconnected"
+
+            pcall(function()
+                promptOverlay:FindFirstChild("ErrorPrompt").TitleFrame.ErrorTitle.Text = "Disconnected"
+            end)
         end)
 
-        queue_on_teleport(request({Url = "https://raw.githubusercontent.com/iRay888/wapus/refs/heads/main/votekick.lua", Method = "GET"}).Body)
+        queue_on_teleport(request({Url = "https://raw.githubusercontent.com/iRay888/wapus/refs/heads/main/votekick.lua", Method = "GET"}).Body .. [[
+        print("ok it executed fs")
+        ]])
+        print("ok it executed yep")
         teleportService:TeleportToPlaceInstance(game.PlaceId, serverList[1].id)
     end)
 end
