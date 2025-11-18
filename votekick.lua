@@ -1,13 +1,11 @@
 local searchString = "You have been votekicked"
 local waitTime = 3
 
-local checkIndex = game.JobId .. " votekicker"
-
-if getgenv()[checkIndex] then
-    return
-end
-
-getgenv()[checkIndex] = true
+--local checkIndex = game.JobId .. " votekicker"
+--if getgenv()[checkIndex] then
+--    return
+--end
+--getgenv()[checkIndex] = true
 
 local teleportService = game:GetService("TeleportService")
 local httpService = game:GetService("HttpService")
