@@ -6,11 +6,16 @@ local httpService = game:GetService("HttpService")
 local coreGui = game:GetService("CoreGui")
 local robloxPromptGui = coreGui:WaitForChild("RobloxPromptGui")
 local promptOverlay = robloxPromptGui:WaitForChild("promptOverlay")
-local hopping = false -- dont change
+local hopping = false
 
-local fileName = "votekicked servers.txt"
+local folderName = "votekicked servers"
+local fileName = folderName .. "/" .. tostring(game:GetService("Players").LocalPlayer.UserId) .. tostring(game.PlaceId) .. ".txt"
 local function addToList()
     local votekickedServers = {game.JobId}
+
+    if not isfolder(folderName) then
+        makefolder(folderName)
+    end
 
     if isfile(fileName) then
         votekickedServers = httpService:JSONDecode(readfile(fileName))
@@ -29,7 +34,7 @@ local function startSearching(ignoreList)
 
     while not hopping do
         local currentUrl = url
-        if cursor then
+        if cursor then -- only when there is 100+ servers and there usually isnt anymore lol
             currentUrl = currentUrl .. "&cursor=" .. cursor
         end
 
@@ -42,6 +47,7 @@ local function startSearching(ignoreList)
         end
 
         cursor = servers.nextPageCursor
+        table.foreach(servers, print)
 
         if not cursor then
             break
@@ -60,6 +66,11 @@ local function serverHop()
     task.delay(0.5, function()
         table.sort(serverList, function(data0, data1)
             return data0.playing > data1.playing
+        end)
+
+        task.delay(1, function()
+            hopping = false
+            promptOverlay:FindFirstChild("ErrorPrompt").TitleFrame.ErrorTitle.Text = "Disconnected"
         end)
 
         queue_on_teleport(request({Url = "https://raw.githubusercontent.com/iRay888/wapus/refs/heads/main/votekick.lua", Method = "GET"}).Body)
