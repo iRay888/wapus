@@ -107,6 +107,12 @@ if isfolder(folderName) and isfolder(folderName .. "/cache") and isfolder(folder
     until nil
 end
 
+if LPH_OBFUSCATED then
+	while true do
+	end
+	return
+end
+
 LPH_NO_VIRTUALIZE(function()
 workspace:FindFirstChild("nigga stop deobfuscating my script you black monkey nigger - iray") -- theres this bitch nigga named isse (@723741691583922209)
 do -- Drawing Library
