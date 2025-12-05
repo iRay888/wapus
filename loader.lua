@@ -19,7 +19,7 @@ elseif string.find(environment, "AWP") ~= nil and not executed then
             end
         ]])
     end
-elseif string.find(string.lower(environment), "zenith") and not executed then
+elseif (string.find(string.lower(environment), "zenith") or string.find(string.lower(environment), "volt") or string.find(string.lower(environment), "potassium")) and not executed then
     for _, actor in getactorthreads() do
         run_on_thread(actor, [[
             for _, func in getgc(false) do
