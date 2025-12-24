@@ -2812,7 +2812,7 @@ LPH_JIT_MAX(function() -- Main Cheat
     local recoil = modules.RecoilSprings
     local network = modules.NetworkClient
     local screenCull = modules.ScreenCull
-    local modifyData = modules.ModifyData
+    --local modifyData = modules.ModifyData
     local bulletcheck = modules.BulletCheck
     local audioSystem = modules.AudioSystem
     local bulletObject = modules.BulletObject
@@ -2825,9 +2825,9 @@ LPH_JIT_MAX(function() -- Main Cheat
     local publicSettings = modules.PublicSettings
     local playerDataUtils = modules.PlayerDataUtils
     local cameraInterface = modules.CameraInterface
-    local contentDatabase = modules.ContentDatabase
     local hudnotify = modules.HudNotificationConfig
     local charInterface = modules.CharacterInterface
+    local contentInterface = modules.ContentInterface
     local hudScopeInterface = modules.HudScopeInterface
     local unscaledScreenGui = modules.UnscaledScreenGui
     local replicationObject = modules.ReplicationObject
@@ -2932,7 +2932,7 @@ LPH_JIT_MAX(function() -- Main Cheat
         replicationInterface.operateOnAllEntries(function(player, entry)
             local character = entry._thirdPersonObject and entry._thirdPersonObject._characterModelHash
 
-            if character and player.Team ~= localplayer.Team then
+            if character and entry._isEnemy then
                 local localposition = camera.CFrame.Position
                 local target = character[partName].Position
 
@@ -2962,7 +2962,7 @@ LPH_JIT_MAX(function() -- Main Cheat
         replicationInterface.operateOnAllEntries(function(player, entry)
             local character = entry._thirdPersonObject and entry._thirdPersonObject._characterModelHash
 
-            if entry._receivedPosition and entry._velspring.t and character and player.Team ~= localplayer.Team and character.Head and (not ignoreCheck or (not killedPlayers[player] and not ignoredPlayers[player])) then
+            if entry._receivedPosition and entry._velspring.t and character and entry._isEnemy and character.Head and (not ignoreCheck or (not killedPlayers[player] and not ignoredPlayers[player])) then
                 if (not useWhitelist or playerStatus[player] ~= "Friendly") and (not onlyTargets or playerStatus[player] == "Target") then
                     local playerDistance = (character.Head.Position - position).Magnitude
                     local playerData = {character, playerDistance}
@@ -3741,7 +3741,7 @@ LPH_JIT_MAX(function() -- Main Cheat
                 local name = fakeWeapons[playerDataUtils.getClassData(playerClient.getPlayerData()).curclass][controller:getActiveWeaponIndex()]
 
                 if displayname == name then
-                    local serverSpeed = contentDatabase.getWeaponData(name).bulletspeed
+                    local serverSpeed = contentInterface.getWeaponData(name).bulletspeed
                     bulletData.velocity = bulletData.velocity.Unit * serverSpeed
                 end
             end
@@ -3955,7 +3955,7 @@ LPH_JIT_MAX(function() -- Main Cheat
         return fromAxisAngle(x, y, z)
     end
 
-    local getModifiedData = modifyData.getModifiedData
+    --[[local getModifiedData = modifyData.getModifiedData
     function modifyData.getModifiedData(data, ...)
         setreadonly(data, false)
 
@@ -4030,14 +4030,14 @@ LPH_JIT_MAX(function() -- Main Cheat
         end
 
         return getModifiedData(data, ...)
-    end
+    end]]
 
-    --[[local getWeaponData = contentDatabase.getWeaponData   -- more synz instability
-    function contentDatabase.getWeaponData(weaponName, makeClone)
+    local getWeaponData = contentInterface.getWeaponData   -- more synz instability
+    function contentInterface.getWeaponData(weaponName, makeClone)
         local data = getWeaponData(weaponName, makeClone)
 
         if makeClone then
-            setreadonly(data, false) -- prolly dont still need this but its here
+            setreadonly(data, false)
 
             if wapus:GetValue("Gun Mods", "No Spread") then
                 data.hipfirespread = 0
@@ -4058,10 +4058,60 @@ LPH_JIT_MAX(function() -- Main Cheat
                 data.crossspeed = 100
                 data.crossdamper = 1
             end
+
+            if unlockAll then -- i think this undetected c:
+                for class, weapons in fakeWeapons do
+                    if class == playerDataUtils.getClassData(playerClient.getPlayerData()).curclass then
+                        for slot, name in weapons do
+                            local displayname = data.displayname or data.name
+
+                            if name == displayname then
+                                local realData = contentInterface.getWeaponData(realWeapons[class][slot])
+                                local firecap = realData.firecap or ((realData.variablefirerate and math.max(table.unpack(realData.firerate))) or realData.firerate)
+
+                                if data.variablefirerate then
+                                    local newFireRates = {}
+
+                                    for firerateIndex, firerate in data.firerate do
+                                        newFireRates[firerateIndex] = math.min(firerate, firecap)
+                                    end
+
+                                    data.firerate = newFireRates
+                                elseif data.firerate > firecap then
+                                    data.firerate = firecap
+                                end
+
+                                if data.firecap and data.firecap > firecap then
+                                    data.firecap = firecap
+                                end
+
+                                if data.magsize > realData.magsize then
+                                    data.magsize = realData.magsize
+                                    data.sparerounds = realData.sparerounds
+                                else
+                                    data.sparerounds = (realData.magsize + realData.sparerounds) - data.magsize
+                                end
+
+                                if data.pelletcount ~= realData.pelletcount then
+                                    data.pelletcount = realData.pelletcount
+                                end
+
+                                if data.penetrationdepth > realData.penetrationdepth then
+                                    data.penetrationdepth = realData.penetrationdepth
+                                end
+
+                                data.bulletspeed = realData.bulletspeed
+
+                                break
+                            end
+                        end
+                    end
+                end
+            end
         end
 
         return data
-    end]]
+    end
 
     local mainStep = cameraObject.step
     --function cameraObject.step(self, dt)
@@ -5028,6 +5078,11 @@ LPH_JIT_MAX(function() -- Main Cheat
         return "Unknown"
     end)
 
+    espInterface.isFriendly = function(player)
+        local playerReplicationObject = replicationInterface.getEntry(player)
+        return not playerReplicationObject._isEnemy
+    end
+
     espInterface.Load()
 
     callbackList["Enemy ESP%%Enabled"] = function(state)
@@ -5642,7 +5697,7 @@ LPH_JIT_MAX(function() -- Main Cheat
         end
 
         replicationInterface.operateOnAllEntries(function(player, entry)
-            if player.Team ~= localplayer.Team then
+            if entry._isEnemy then
                 local character = entry._thirdPersonObject and entry._thirdPersonObject._characterModelHash
                 movementCache.position[player] = movementCache.position[player] or {}
 
@@ -5725,7 +5780,7 @@ LPH_JIT_MAX(function() -- Main Cheat
 
         if wapus:GetValue("Hit Boxes", "Enabled") then
             replicationInterface.operateOnAllEntries(function(player, entry)
-                if player.Team ~= localplayer.Team then
+                if entry._isEnemy then
                     local sphere = hitboxObjects:FindFirstChild(player.Name)
 
                     if entry._receivedPosition then
@@ -5758,7 +5813,7 @@ LPH_JIT_MAX(function() -- Main Cheat
                     local entryThirdPersonObject = entry._thirdPersonObject
                     local character = entryThirdPersonObject and entryThirdPersonObject._character
 
-                    if player.Team ~= localplayer.Team and character then
+                    if entry._isEnemy and character then
                         local clone
 
                         if wapus:GetValue("Backtracking", "Clone Character") then
