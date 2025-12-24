@@ -2795,7 +2795,11 @@ LPH_JIT_MAX(function() -- Main Cheat
     local modules = {}
     for name, data in moduleCache do
         if data then
-            modules[name] = data.module
+			if type(data) == "table" then
+            	modules[name] = data.module
+			else
+            	modules[name] = data
+			end
         end
     end
 
