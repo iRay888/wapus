@@ -1,6 +1,6 @@
 -- https://discord.gg/tUEJZYvF9d
 local executor = string.lower(identifyexecutor and identifyexecutor() or "")
-local source = game:HttpGet("https://raw.githubusercontent.com/iRay888/wapus/refs/heads/main/source.lua"))
+local source = game:HttpGet("https://raw.githubusercontent.com/iRay888/wapus/refs/heads/main/source.lua")
 local threadSource = [[
     for _, func in getgc(false) do
         if type(func) == "function" and islclosure(func) and debug.getinfo(func).name == "require" and string.find(debug.getinfo(func).source, "ClientLoader") then
