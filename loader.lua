@@ -26,8 +26,6 @@ elseif string.find(executor, "wave") and (not getgenv().executed) then
     runSource(run_on_thread, getactorthreads)
 elseif string.find(executor, "nihon") and (not getgenv().executed) then
     runSource(run_on_actor, getdeletedactors)
-elseif string.find(executor, "choco") and (not getgenv().executed) then
-    runSource(run_on_actor, get_deleted_actors)
 elseif getfflag and (string.lower(tostring(getfflag("DebugRunParallelLuaOnMainThread"))) == "true") then
     loadstring(source)()
 elseif setfflag then
