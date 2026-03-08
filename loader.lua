@@ -22,6 +22,10 @@ elseif string.find(executor, "volt") and (not getgenv().executed) then
     runSource(run_on_actor, getactors)
 elseif string.find(executor, "potassium") and (not getgenv().executed) then
     runSource(run_on_thread, getactorthreads)
+elseif string.find(executor, "nihon") and (not getgenv().executed) then
+    runSource(run_on_thread, getactorthreads)
+elseif string.find(executor, "choco") and (not getgenv().executed) then
+    runSource(run_on_actor, get_deleted_actors)
 elseif getfflag and (string.lower(tostring(getfflag("DebugRunParallelLuaOnMainThread"))) == "true") then
     loadstring(source)()
 elseif setfflag then
