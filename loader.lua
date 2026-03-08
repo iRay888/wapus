@@ -16,7 +16,7 @@ local function runSource(runner, getAll)
     end
 end
 
-if (string.find(executor, "wave") or string.find(executor, "choco")) and (not getgenv().executed) then
+if string.find(executor, "choco") and (not getgenv().executed) then
     runSource(run_on_actor, get_deleted_actors)
 elseif string.find(executor, "volt") and (not getgenv().executed) then
     runSource(run_on_actor, getactors)
