@@ -2842,7 +2842,7 @@ LPH_JIT_MAX(function() -- Main Cheat
     --local networkConnections = debug.getupvalue(debug.getupvalue(network._init, 2), 2)
     local networkConnections
     for i, v in getgc(true) do
-        if type(v) == "table" and rawget(v, "died") and rawget(v, "smallaward") then
+        if type(v) == "table" and rawget(v, "died") and rawget(v, "weaponunlocked") then
             networkConnections = v
             break
         end
